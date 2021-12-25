@@ -1,0 +1,38 @@
+import CreateDataContext from "./CreateDataContext"
+import trackerapi from "../api/tracker"
+import {navigate} from "../navigationRef";
+const TrackReducer=(state,action)=>{
+    switch (action.type){
+        case 'fetch_tracks':
+            return action.payload;
+        case 'add':
+            return [...state,action.payload]
+        default:
+            return state;
+    }
+}
+
+const fetchTracks= (dispatch) =>{
+  return async ()=>{
+      try {
+          const response=await trackerapi.get('/tracks');
+          dispatch({type:'fetch_tracks',payload:Array.isArray(response.data)? response.data:[]});
+      }catch (err){
+          console.log(err);
+      }
+  }
+};
+const createTrack= (dispatch)=>{
+    return async (name,locations,reset)=>{
+        try {
+            const response=await trackerapi.post('/tracks', {name, locations});
+            navigate('TrackList');
+            dispatch({type:'add',payload:response.data})
+            reset();
+        }catch (err){
+            console.log(err);
+        }
+    }
+};
+
+export const {Provider,Context}=CreateDataContext(TrackReducer,{fetchTracks,createTrack},[]);
