@@ -8,9 +8,15 @@ const router=express.Router();
 
 router.use(requireAuth);
 
-router.get('/tracks',async (req,res)=>{
-	const tracks=await Track.find({userId:req.user._id});
-	res.send(tracks);
+router.get('/track',async (req,res)=>{
+	try{
+		console.log("HI from manvir");
+		const tracks=await Track.find({userId:req.user._id});
+		res.send(tracks);
+	}catch(err){
+		console.log(err);
+		res.status(422).send({error: err.message});
+	}
 });
 
 router.post('/tracks',async (req,res)=>{
@@ -27,6 +33,16 @@ router.post('/tracks',async (req,res)=>{
 	}catch(err)
 	{
 		res.status(422).send({error: err.message});
+	}
+});
+
+router.delete('/track',async (req,res)=>{
+	try{
+		console.log(req.body);
+		await Track.findByIdAndDelete(req.body.id);
+		res.status(204).send({});
+	}catch(err){
+		res.status(422).send({error:err.message});
 	}
 });
 module.exports=router;

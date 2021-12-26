@@ -1,4 +1,4 @@
-import "./_mocklocation";
+//import "./_mocklocation";
 import React, { useContext, useCallback } from "react";
 import {
   StyleSheet,
@@ -31,16 +31,19 @@ const TrackCreateScreen = withNavigationFocus(({ isFocused }) => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
     >
-		<ScrollView>
-			<SafeAreaView forceInset={{ top: "always" }} style={{marginBottom:20}}>
-				<Text h2 style={{ textAlign: "center"}}>
-					Create Track
-				</Text>
-				<Map />
-				<Text style={styles.text_container}>{err}</Text>
-				<TrackForm />
-			</SafeAreaView>
-		</ScrollView>
+      <ScrollView>
+        <SafeAreaView
+          forceInset={{ top: "always" }}
+          style={{ marginBottom: 20 }}
+        >
+          <Text h2 style={{ textAlign: "center" }}>
+            Create Track
+          </Text>
+          <Map />
+          <Text style={styles.text_container}>{err}</Text>
+          <TrackForm />
+        </SafeAreaView>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 });
@@ -53,7 +56,6 @@ const styles = StyleSheet.create({
 TrackCreateScreen.navigationOptions = {
   title: "Add Track",
   tabBarIcon: <AntDesign name="plus" size={24} color="black" />,
-
 };
 
 export default TrackCreateScreen;
