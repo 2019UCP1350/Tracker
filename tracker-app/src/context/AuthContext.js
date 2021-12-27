@@ -46,8 +46,14 @@ const signin=(dispatch)=>{
 };
 
 const signup=(dispatch)=>{
-	return  async ({email,password})=>{
+	return  async ({email,password,confirmPassword})=>{
 		try{
+			console.log("Hi from signup");
+			console.log("Bye",password,confirmPassword);
+			if(password!=confirmPassword){
+				dispatch({type:"add_error",payload:"Password and Confirm-Password doesnot match."});
+				return 
+			}
 			const response=await trackerapi.post("/signup",{email,password});
 			await AsyncStorage.setItem('token',response.data.token);
 			dispatch({type:"signup",payload:response.data.token});

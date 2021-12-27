@@ -10,7 +10,6 @@ router.use(requireAuth);
 
 router.get('/track',async (req,res)=>{
 	try{
-		console.log("HI from manvir");
 		const tracks=await Track.find({userId:req.user._id});
 		res.send(tracks);
 	}catch(err){
@@ -28,7 +27,6 @@ router.post('/tracks',async (req,res)=>{
 	try{
 		const track=new Track({name,locations,userId:req.user._id});
 		await track.save();
-		console.log("Hi",track);
 		res.send(track);
 	}catch(err)
 	{
