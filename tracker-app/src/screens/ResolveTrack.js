@@ -5,7 +5,6 @@ import {ActivityIndicator} from "react-native";
 const ResolveTrackScreen=()=>{
 	const {fetchTracks}=useContext(TrackContext);
 	useEffect(()=>{
-		console.log("Hi from fetching tracks");
         fetchTracks();
     },[]);
 	return <ActivityIndicator size="large" style={{flexDirection: "row",
