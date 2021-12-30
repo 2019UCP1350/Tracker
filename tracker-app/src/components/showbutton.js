@@ -3,7 +3,7 @@ import { ListItem } from "react-native-elements";
 import { StyleSheet, View } from "react-native";
 import { Text } from "react-native-elements";
 
-const ShowButton = ({ title, value ,bottomDivider}) => {
+const ShowButton = ({ title, value, bottomDivider }) => {
   return (
     <ListItem topDivider bottomDivider={bottomDivider}>
       <View style={styles.container}>

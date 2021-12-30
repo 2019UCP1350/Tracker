@@ -28,6 +28,7 @@ trackListFlow.navigationOptions = {
 };
 
 const switchNavigator = createSwitchNavigator({
+  // Account: AccountScreen,
   ResolveAuth: ResolveAuthScreen,
   Email: EmailScreen,
   loginFlow: createStackNavigator({
@@ -38,13 +39,6 @@ const switchNavigator = createSwitchNavigator({
   Bottom: createBottomTabNavigator({
     trackListFlow,
     TrackCreate: TrackCreateScreen,
-    // TrackCreate:createStackNavigator({
-    //     Home:{
-    //     screen:TrackCreateScreen,
-    //     navigationOptions:{
-    //         title:'Create Track'
-    //     }
-    // }}),
     Account: AccountScreen,
   }),
 });

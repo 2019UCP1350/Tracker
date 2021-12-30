@@ -19,17 +19,11 @@ const AccountScreen = () => {
       <Text style={styles.text_container}> AccountScreen</Text>
       <Spacer />
       <ShowButton title="Username:" value="RandomUser" />
-      <ShowButton title="Email" value="RandomEmail" bottomDivider={true} />
+      <ShowButton title="Email:" value="RandomEmail" bottomDivider={true} />
       <UpdateButton
         title="Change Username"
         callback={() => {
           console.log("HI from user");
-        }}
-      />
-      <UpdateButton
-        title="Change Email"
-        callback={() => {
-          console.log("HI from Email");
         }}
       />
       <UpdateButton

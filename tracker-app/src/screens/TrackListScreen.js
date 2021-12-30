@@ -9,6 +9,7 @@ import {
 import { ListItem, Button } from "react-native-elements";
 import { Context as TrackContext } from "../context/TrackContext";
 import { navigate } from "../navigationRef";
+
 const TrackListScreen = () => {
   const { state, deleteTrack } = useContext(TrackContext);
   const [loading, setLoading] = useState(false);
@@ -22,7 +23,7 @@ const TrackListScreen = () => {
           text: "OK",
           onPress: () => {
             setLoading(true);
-            deleteTrack(id,setLoading);
+            deleteTrack(id, setLoading);
           },
         },
       ]

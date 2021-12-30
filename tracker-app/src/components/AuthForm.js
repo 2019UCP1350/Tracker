@@ -14,7 +14,15 @@ import { Input, Text, Button } from "react-native-elements";
 import Spacer from "./spacer";
 import { Ionicons } from "@expo/vector-icons";
 
-const AuthForm = ({ text, type, state, callback, navigationCallback,showPassword,setShowPassword }) => {
+const AuthForm = ({
+  text,
+  type,
+  state,
+  callback,
+  navigationCallback,
+  showPassword,
+  setShowPassword,
+}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -24,96 +32,103 @@ const AuthForm = ({ text, type, state, callback, navigationCallback,showPassword
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1 }}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+      >
+        <SafeAreaView
+          forceInset={{ top: "always" }}
+          style={{ marginBottom: 20 }}
         >
-          <SafeAreaView
-            forceInset={{ top: "always" }}
-            style={{ marginBottom: 20 }}
-          >
-            <View style={styles.container}>
-              <Spacer>
-                <Text h3>{type} for Tracker</Text>
-              </Spacer>
-              <Spacer />
+          <View style={styles.container}>
+            <Spacer>
+              <Text h3>{type} for Tracker</Text>
+            </Spacer>
+            <Spacer />
+            <Input
+              label="Email"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            <Input
+              label="Password"
+              value={password}
+              onChangeText={setPassword}
+              autoCapitalize="none"
+              autoCorrect={false}
+              secureTextEntry={!showPassword}
+              rightIcon={
+                <Ionicons
+                  name={showPassword ? "eye-outline" : "eye-off-outline"}
+                  onPress={() => {
+                    setShowPassword(!showPassword);
+                  }}
+                  size={30}
+                  color="#067bef"
+                />
+              }
+            />
+            {type === "Sign Up" ? (
               <Input
-                label="Email"
-                value={email}
-                onChangeText={setEmail}
+                label="Confirm Password"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
                 autoCapitalize="none"
                 autoCorrect={false}
-              />
-              <Input
-                label="Password"
-                value={password}
-                onChangeText={setPassword}
-                autoCapitalize="none"
-                autoCorrect={false}
-                secureTextEntry={!showPassword}
+                secureTextEntry={!showConfirmPassword}
                 rightIcon={
                   <Ionicons
                     name={
-                      showPassword ? "eye-outline" : "eye-off-outline"
+                      showConfirmPassword ? "eye-outline" : "eye-off-outline"
                     }
                     onPress={() => {
-                      setShowPassword(!showPassword);
+                      setShowConfirmPassword(!showConfirmPassword);
                     }}
                     size={30}
                     color="#067bef"
                   />
                 }
               />
-              {type === "Sign Up" ? (
-                <Input
-                  label="Confirm Password"
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  secureTextEntry={!showConfirmPassword}
-                  rightIcon={
-                    <Ionicons
-                      name={
-                        showConfirmPassword ? "eye-outline" : "eye-off-outline"
-                      }
-                      onPress={() => {
-                        setShowConfirmPassword(!showConfirmPassword);
-                      }}
-                      size={30}
-                      color="#067bef"
-                    />
-                  }
-                />
-              ) : null}
-              {state.errorMessage ? (
-                <Spacer>
-                  <Text style={styles.errorMessage}>{state.errorMessage}</Text>
-                </Spacer>
-              ) : null}
+            ) : null}
+            {state.errorMessage ? (
               <Spacer>
-                <Button
-                  title={type}
-                  onPress={() => {
-                    if (type === "Sign Up") {
-                      callback({ email, password, confirmPassword });
-                    } else callback({ email, password });
-                  }}
-                />
+                <Text style={styles.errorMessage}>{state.errorMessage}</Text>
               </Spacer>
+            ) : null}
+            <Spacer>
+              <Button
+                title={type}
+                onPress={() => {
+                  if (type === "Sign Up") {
+                    callback({ email, password, confirmPassword });
+                  } else callback({ email, password });
+                }}
+              />
+            </Spacer>
+            <Spacer>
+              <TouchableOpacity
+                onPress={() => {
+                  navigationCallback();
+                }}
+              >
+                <Text style={styles.link}>{text}</Text>
+              </TouchableOpacity>
+            </Spacer>
+            {type === "Sign In" ? (
               <Spacer>
                 <TouchableOpacity
                   onPress={() => {
-                    navigationCallback();
+                    console.log("Hi forgot password");
                   }}
                 >
-                  <Text style={styles.link}>{text}</Text>
+                  <Text style={styles.link}>Forgot Password ?</Text>
                 </TouchableOpacity>
               </Spacer>
-            </View>
-          </SafeAreaView>
-        </ScrollView>
-      </TouchableWithoutFeedback>
+            ) : null}
+          </View>
+        </SafeAreaView>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };
@@ -132,6 +147,7 @@ const styles = StyleSheet.create({
   link: {
     color: "blue",
     fontSize: 18,
+    textAlign: "center",
   },
 });
 

@@ -43,7 +43,7 @@ const createTrack = (dispatch) => {
 };
 
 const deleteTrack = (dispatch) => {
-  return async (id,callback) => {
+  return async (id, callback) => {
     try {
       await trackerapi.delete("/track", { data: { id: id } });
       dispatch({ type: "delete", payload: id });
