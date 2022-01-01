@@ -22,7 +22,7 @@ const TrackDetailScreen = ({ navigation }) => {
       >
         <Polyline coordinates={track.locations.map((loc) => loc.coords)} />
       </MapView>
-      <Text style={{ fontSize: 48 }}>{track.name}</Text>
+      <Text style={styles.textContainer}>{track.name}</Text>
     </SafeAreaView>
   );
 };
@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
   map: {
     height: 300,
   },
+  textContainer: { fontSize: 48, textAlign: "center", color: "#067bef" },
 });
 
 export default TrackDetailScreen;

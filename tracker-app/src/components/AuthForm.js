@@ -4,8 +4,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   KeyboardAvoidingView,
-  Keyboard,
-  TouchableWithoutFeedback,
   Platform,
   ScrollView,
 } from "react-native";
@@ -13,6 +11,7 @@ import { SafeAreaView } from "react-navigation";
 import { Input, Text, Button } from "react-native-elements";
 import Spacer from "./spacer";
 import { Ionicons } from "@expo/vector-icons";
+import { navigate } from "../navigationRef";
 
 const AuthForm = ({
   text,
@@ -41,7 +40,9 @@ const AuthForm = ({
         >
           <View style={styles.container}>
             <Spacer>
-              <Text h3>{type} for Tracker</Text>
+              <Text h3 style={{ textAlign: "center", color: "#067bef" }}>
+                {type} for Tracker
+              </Text>
             </Spacer>
             <Spacer />
             <Input
@@ -119,7 +120,7 @@ const AuthForm = ({
               <Spacer>
                 <TouchableOpacity
                   onPress={() => {
-                    console.log("Hi forgot password");
+                    navigate('RegisterEmail');
                   }}
                 >
                   <Text style={styles.link}>Forgot Password ?</Text>

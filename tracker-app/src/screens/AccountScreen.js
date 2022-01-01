@@ -3,9 +3,9 @@ import { StyleSheet, Text } from "react-native";
 import { SafeAreaView } from "react-navigation";
 import Spacer from "../components/spacer";
 import { Context as AuthContext } from "../context/AuthContext";
-import { MaterialIcons } from "@expo/vector-icons";
 import UpdateButton from "../components/updatebutton";
 import ShowButton from "../components/showbutton";
+import { navigate } from "../navigationRef";
 
 /*
 	we can use this to make sure that our content always be inside the dispaly screen
@@ -13,23 +13,23 @@ import ShowButton from "../components/showbutton";
 	<SafeAreaView forceInset={{top:'always'}}>
 */
 const AccountScreen = () => {
-  const { signout } = useContext(AuthContext);
+  const { signout, state } = useContext(AuthContext);
   return (
     <SafeAreaView forceInset={{ top: "always" }} style={{ marginBottom: 20 }}>
       <Text style={styles.text_container}> AccountScreen</Text>
       <Spacer />
-      <ShowButton title="Username:" value="RandomUser" />
-      <ShowButton title="Email:" value="RandomEmail" bottomDivider={true} />
+      <ShowButton title="Username:" value={state.username} />
+      <ShowButton title="Email:" value={state.email} bottomDivider={true} />
       <UpdateButton
         title="Change Username"
         callback={() => {
-          console.log("HI from user");
+          navigate("ChangeUsername");
         }}
       />
       <UpdateButton
         title="Change Password"
         callback={() => {
-          console.log("HI from Password");
+          navigate("ChangePassword", { page: "Account" });
         }}
       />
       <UpdateButton title="Sign Out" callback={signout} />
@@ -44,9 +44,6 @@ const styles = StyleSheet.create({
   },
 });
 
-AccountScreen.navigationOptions = {
-  title: "Account",
-  tabBarIcon: <MaterialIcons name="switch-account" size={24} color="black" />,
-};
+AccountScreen.navigationOptions = { headerShown: false };
 
 export default AccountScreen;

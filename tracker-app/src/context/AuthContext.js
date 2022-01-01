@@ -12,19 +12,29 @@ const AuthReducer = (state, action) => {
         errorMessage: "",
         token: action.payload.token,
         time: action.payload.time,
+        email: action.payload.email,
+        username: action.payload.username,
       };
     case "signin":
       return {
         token: action.payload.token,
         isEmailVerified: action.payload.isEmailVerified,
         time: action.payload.time,
+        email: action.payload.email,
+        username: action.payload.username,
       };
     case "signout":
       return { errorMessage: "", token: null, isEmailVerified: null };
     case "otp_verify":
       return { ...state, isEmailVerified: action.payload, time: 0 };
     case "add_time":
-      return { ...state, time: action.paload, errorMessage: "" };
+      return { ...state, time: action.payload, errorMessage: "" };
+    case "add_email":
+      return { ...state, email: action.payload };
+    case "delete":
+      return action.payload;
+    case 'add_username':
+      return {...state,username:action.payload};
     default:
       return state;
   }
@@ -48,14 +58,19 @@ const signup = (dispatch) => {
       );
       dispatch({
         type: "signup",
-        payload: { token: response.data.token, time: time },
+        payload: {
+          token: response.data.token,
+          time: time,
+          username: response.data.username,
+          email: response.data.email,
+        },
       });
-      navigate("Email", { email });
+      navigate("Email");
     } catch (err) {
       console.log("Error with signup", err.message);
       dispatch({
         type: "add_error",
-        payload: "Something went wrong with Sign Up ",
+        payload: "Something went wrong with Sign Up",
       });
     }
     // make an api request to add new userAgent
@@ -69,13 +84,14 @@ const signin = (dispatch) => {
       const response = await trackerapi.post("/signin", { email, password });
       await AsyncStorage.setItem("token", response.data.token);
       if (response.data.isEmailVerified) {
-        await AsyncStorage.setItem("isEmailVerified", "true");
         dispatch({
           type: "signin",
           payload: {
             token: response.data.token,
             isEmailVerified: true,
             time: 0,
+            email: response.email,
+            username: response.username,
           },
         });
         navigate("mainFlow");
@@ -90,9 +106,11 @@ const signin = (dispatch) => {
             token: response.data.token,
             isEmailVerified: false,
             time: time,
+            email: response.email,
+            username: response.username,
           },
         });
-        navigate("Email", { email });
+        navigate("Email");
       }
     } catch (err) {
       console.log("Sign-in", err);
@@ -114,14 +132,18 @@ const error = (dispatch) => {
 };
 
 const otpverify = (dispatch) => {
-  return async (otp) => {
+  return async (otp, email, page) => {
     try {
       const time = parseInt(Date.now() / 1000);
-      const response = await trackerapi.post("/otpverify", { otp, time });
+      const response = await trackerapi.post("/otpverify", {
+        otp,
+        time,
+        email,
+      });
       if (response.data.isEmailVerified) {
         await AsyncStorage.setItem("isEmailVerified", "true");
         dispatch({ type: "otpverify", payload: true });
-        navigate("mainFlow");
+        navigate(page, { page: "Signin" });
       } else {
         dispatch({ type: "add_error", payload: response.data.error });
       }
@@ -138,17 +160,17 @@ const tryLocalLogin = (dispatch) => {
   return async () => {
     const token = await AsyncStorage.getItem("token");
     if (token) {
-      const isEmailVerified = await AsyncStorage.getItem("isEmailVerified");
-      if (isEmailVerified === "true") {
-        dispatch({
-          type: "signin",
-          payload: { token, isEmailVerified },
-          time: 0,
-        });
-        navigate("mainFlow");
-      } else {
-        try {
-          const response = await trackerapi.get("/time");
+      try {
+        const response = await trackerapi.get("/info");
+        const isEmailVerified = response.data.isEmailVerified;
+        if (isEmailVerified) {
+          dispatch({
+            type: "signin",
+            payload: { ...response.data, token },
+            time: 0,
+          });
+          navigate("mainFlow");
+        } else {
           const time = Math.max(
             response.data.time - parseInt(Date.now() / 1000),
             0
@@ -156,15 +178,15 @@ const tryLocalLogin = (dispatch) => {
           dispatch({
             type: "signin",
             payload: {
+              ...response.data,
               token,
-              isEmailVerified: false,
-              time: time,
+              time,
             },
           });
-          navigate("Email", { email: response.data.email });
-        } catch (err) {
-          console.log("Error from get time", err);
+          navigate("Email");
         }
+      } catch (err) {
+        console.log("Error from get time", err);
       }
     } else {
       navigate("Signup");
@@ -175,12 +197,41 @@ const tryLocalLogin = (dispatch) => {
 const signout = (dispatch) => async () => {
   try {
     await AsyncStorage.removeItem("token");
-    await AsyncStorage.removeItem("isEmailVerified");
     dispatch({ type: "signout" });
     navigate("loginFlow");
   } catch (err) {
-    console.log("Hi from signout", err);
+    console.log("Error from signout", err);
   }
+};
+
+const checkUser = (dispatch) => {
+  return async (email, callback) => {
+    try {
+      if (!email) {
+        dispatch({
+          type: "add_error",
+          payload: "Email field cannot be empty.",
+        });
+        callback();
+        return;
+      }
+      const response = await trackerapi.post("/usercheck", { email });
+      if (response.data.error) {
+        dispatch({ type: "add_error", payload: "User not registered." });
+        callback();
+        return;
+      }
+      const time = Math.max(
+        response.data.time - parseInt(Date.now() / 1000),
+        0
+      );
+      dispatch({ type: "add_email", payload: email });
+      dispatch({ type: "add_time", payload: time });
+      navigate("Email", { toShow: true });
+    } catch (err) {
+      console.log("Error from checking user", err);
+    }
+  };
 };
 
 const resendEmail = (dispatch) => {
@@ -197,8 +248,39 @@ const resendEmail = (dispatch) => {
       console.log("error from sending email", err);
       dispatch({
         type: "add_error",
-        payload: "Something went wrong with sending email",
+        payload: "Something went wrong with sending email.",
       });
+    }
+  };
+};
+
+const changePassword = (dispatch) => {
+  return async (newPassword, confirmPassword, page, callback, email) => {
+    if (!newPassword) {
+      dispatch({ type: "add_error", payload: "Enter new Password" });
+      callback();
+      return;
+    }
+    if (newPassword != confirmPassword) {
+      dispatch({
+        type: "add_error",
+        payload: "New Password and Confirm Password doesnot match.",
+      });
+      callback();
+      return;
+    }
+    try {
+      await trackerapi.post("/changepassword", {
+        email,
+        password: newPassword,
+      });
+      navigate(page);
+    } catch (err) {
+      dispatch({
+        type: "add_error",
+        payload: "Something went wrong with changing password.",
+      });
+      console.log("Error from change password", err);
     }
   };
 };
@@ -208,9 +290,41 @@ const deleteUser = (dispatch) => {
     try {
       await trackerapi.delete("/user", {});
       await AsyncStorage.removeItem("token");
+      dispatch({
+        type: "delete",
+        payload: {
+          email: "",
+          token: "",
+          username: "",
+          time: 0,
+          errorMessage: "",
+          isEmailVerified: false,
+        },
+      });
       navigate("loginFlow");
     } catch (err) {
+      dispatch({
+        type: "add_error",
+        payload: "Something went wrong while Going Back.",
+      });
       console.log("error from deleting user", err);
+    }
+  };
+};
+
+const changeUsername = (dispatch) => {
+  return async (username, email,callback) => {
+    try {
+      await trackerapi.post('/changeusername',{username,email});
+      dispatch({type:'add_username',payload:username});
+      navigate('AccountS');
+    } catch (err) {
+      dispatch({
+        type: "add_error",
+        payload: "Something went wrong with changing Username.",
+      });
+      callback();
+      console.log("Error while changing username", err);
     }
   };
 };
@@ -226,6 +340,9 @@ export const { Context, Provider } = CreateDataContext(
     otpverify,
     resendEmail,
     deleteUser,
+    checkUser,
+    changePassword,
+    changeUsername
   },
   {
     token: null,

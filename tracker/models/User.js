@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
     default: false,
   },
   otp: {
-    type: Number,
+    type: String,
   },
   password: {
     type: String,
@@ -64,5 +64,6 @@ userSchema.methods.comparePassword = function (candidatePassword) {
     });
   });
 };
+
 mongoose.model("User", userSchema); // by default it is imported when we include
 // this file in any other file

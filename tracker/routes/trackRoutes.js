@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.use(requireAuth);
 
-router.get("/track", async (req, res) => {
+router.post("/track", async (req, res) => {
   try {
     const tracks = await Track.find({ userId: req.user._id });
     res.send(tracks);

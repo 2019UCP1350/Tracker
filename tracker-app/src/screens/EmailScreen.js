@@ -12,11 +12,13 @@ import {
 import { Button, Input } from "react-native-elements";
 import Spacer from "../components/spacer";
 import { Context as AuthContext } from "../context/AuthContext";
+import { navigate } from "../navigationRef";
 
 const EmailScreen = ({ navigation }) => {
   const [otp, setOtp] = useState("");
-  const { otpverify, resendEmail, deleteUser, state } = useContext(AuthContext);
+  const { otpverify, resendEmail, deleteUser, state,error } = useContext(AuthContext);
   const [seconds, setSeconds] = useState(state.time);
+  const toShow = navigation.getParam("toShow");
   useEffect(() => {
     let myInterval = setInterval(() => {
       if (seconds > 0) {
@@ -37,9 +39,7 @@ const EmailScreen = ({ navigation }) => {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.container}>
           <Text style={styles.textcontainer}>
-            {`Enter the Verification code send to ${navigation.getParam(
-              "email"
-            )}.`}
+            {`Enter the Verification code send to ${state.email}.`}
           </Text>
           <Spacer>
             <Input
@@ -62,7 +62,7 @@ const EmailScreen = ({ navigation }) => {
             title="Submit"
             style={styles.button}
             onPress={() => {
-              otpverify(parseInt(otp));
+              otpverify(otp, state.email,(toShow?'ChangePassword':"mainFlow"));
             }}
           />
           <Spacer />
@@ -79,17 +79,26 @@ const EmailScreen = ({ navigation }) => {
               <Text style={styles.textcontainer}>Resend Email</Text>
             </TouchableOpacity>
           )}
-          <TouchableOpacity onPress={deleteUser}>
+          <TouchableOpacity
+            onPress={() => {
+              if (toShow) {
+                navigate('RegisterEmail');
+              } else {
+                deleteUser();
+              }
+              error('');
+            }}
+          >
             <Spacer />
-            <Text style={styles.textcontainer}>
-              Entered a wrong Email want to back?
-            </Text>
+            <Text style={styles.textcontainer}>Want to go back?</Text>
           </TouchableOpacity>
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
 };
+
+EmailScreen.navigationOptions = { headerShown: false };
 
 const styles = StyleSheet.create({
   container: {

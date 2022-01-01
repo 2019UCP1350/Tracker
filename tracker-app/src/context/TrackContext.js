@@ -17,7 +17,7 @@ const TrackReducer = (state, action) => {
 const fetchTracks = (dispatch) => {
   return async () => {
     try {
-      const response = await trackerapi.get("/track");
+      const response = await trackerapi.post("/track");
       //   while (!Array.isArray(response.data)){
       //       response=await trackerapi.get('/track');
       //   }
