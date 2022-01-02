@@ -8,16 +8,22 @@ import {
   TouchableWithoutFeedback,
   Platform,
   TouchableOpacity,
+  Animated,
 } from "react-native";
 import { Button, Input } from "react-native-elements";
+import { Dimensions } from 'react-native';
 import Spacer from "../components/spacer";
 import { Context as AuthContext } from "../context/AuthContext";
 import { navigate } from "../navigationRef";
 
+
 const EmailScreen = ({ navigation }) => {
   const [otp, setOtp] = useState("");
-  const { otpverify, resendEmail, deleteUser, state,error } = useContext(AuthContext);
-  const [seconds, setSeconds] = useState(state.time);
+  const { otpverify, resendEmail, deleteUser, state, error } =
+    useContext(AuthContext);
+  //const [seconds, setSeconds] = useState(state.time);
+  const [seconds, setSeconds] = useState(0);
+  const opacity=useState(new Animated.Value(0))[0];
   const toShow = navigation.getParam("toShow");
   useEffect(() => {
     let myInterval = setInterval(() => {
@@ -31,6 +37,25 @@ const EmailScreen = ({ navigation }) => {
       clearInterval(myInterval);
     };
   });
+  
+  const fadeOut=()=>{
+    Animated.timing(opacity,{
+      toValue:0,
+      duration:3000,
+      useNativeDriver:true,
+    }).start()
+  };
+
+  const fadeIn=()=>{
+    Animated.timing(opacity,{
+      toValue:1,
+      duration:500,
+      useNativeDriver:true,
+    }).start(()=>{
+      fadeOut();
+    })
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -62,7 +87,11 @@ const EmailScreen = ({ navigation }) => {
             title="Submit"
             style={styles.button}
             onPress={() => {
-              otpverify(otp, state.email,(toShow?'ChangePassword':"mainFlow"));
+              otpverify(
+                otp,
+                state.email,
+                toShow ? "ChangePassword" : "mainFlow"
+              );
             }}
           />
           <Spacer />
@@ -72,8 +101,10 @@ const EmailScreen = ({ navigation }) => {
             </Text>
           ) : (
             <TouchableOpacity
-              onPress={() => {
-                resendEmail(setSeconds);
+              onPress={async () => {
+                fadeIn();
+                await resendEmail(setSeconds);
+                 
               }}
             >
               <Text style={styles.textcontainer}>Resend Email</Text>
@@ -82,16 +113,32 @@ const EmailScreen = ({ navigation }) => {
           <TouchableOpacity
             onPress={() => {
               if (toShow) {
-                navigate('RegisterEmail');
+                navigate("RegisterEmail");
               } else {
                 deleteUser();
               }
-              error('');
+              error("");
             }}
           >
             <Spacer />
             <Text style={styles.textcontainer}>Want to go back?</Text>
           </TouchableOpacity>
+          <Animated.View
+            style={{
+              backgroundColor: "#067bef",
+              opacity,
+              position:"absolute",
+              bottom:5,
+              padding:10,
+              width:Dimensions.get('window').width-10,
+              left:5,
+              borderRadius:10
+            }}
+          >
+              <Text style={{ color: "white", fontSize: 20,textAlign:"center" }}>
+                Email has been sent.
+              </Text>
+          </Animated.View>
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>

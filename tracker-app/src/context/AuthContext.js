@@ -14,6 +14,7 @@ const AuthReducer = (state, action) => {
         time: action.payload.time,
         email: action.payload.email,
         username: action.payload.username,
+        isEmailVerified: false,
       };
     case "signin":
       return {
@@ -22,19 +23,25 @@ const AuthReducer = (state, action) => {
         time: action.payload.time,
         email: action.payload.email,
         username: action.payload.username,
+        errorMessage: "",
       };
     case "signout":
       return { errorMessage: "", token: null, isEmailVerified: null };
     case "otp_verify":
-      return { ...state, isEmailVerified: action.payload, time: 0 };
+      return {
+        ...state,
+        isEmailVerified: action.payload,
+        time: 0,
+        errorMessage: "",
+      };
     case "add_time":
       return { ...state, time: action.payload, errorMessage: "" };
     case "add_email":
       return { ...state, email: action.payload };
     case "delete":
       return action.payload;
-    case 'add_username':
-      return {...state,username:action.payload};
+    case "add_username":
+      return { ...state, username: action.payload };
     default:
       return state;
   }
@@ -274,6 +281,7 @@ const changePassword = (dispatch) => {
         email,
         password: newPassword,
       });
+      dispatch({ type: "add_error", payload: "" });
       navigate(page);
     } catch (err) {
       dispatch({
@@ -313,11 +321,11 @@ const deleteUser = (dispatch) => {
 };
 
 const changeUsername = (dispatch) => {
-  return async (username, email,callback) => {
+  return async (username, email, callback) => {
     try {
-      await trackerapi.post('/changeusername',{username,email});
-      dispatch({type:'add_username',payload:username});
-      navigate('AccountS');
+      await trackerapi.post("/changeusername", { username, email });
+      dispatch({ type: "add_username", payload: username });
+      navigate("AccountS");
     } catch (err) {
       dispatch({
         type: "add_error",
@@ -342,7 +350,7 @@ export const { Context, Provider } = CreateDataContext(
     deleteUser,
     checkUser,
     changePassword,
-    changeUsername
+    changeUsername,
   },
   {
     token: null,
