@@ -50,14 +50,11 @@ const AuthReducer = (state, action) => {
 const signup = (dispatch) => {
   return async ({ email, password, confirmPassword }) => {
     try {
-      if (password != confirmPassword) {
-        dispatch({
-          type: "add_error",
-          payload: "Password and Confirm-Password doesnot match.",
-        });
-        return;
+      const response = await trackerapi.post("/signup", { email, password,confirmPassword });
+      if(response.error){
+        dispatch({type:"add_error",payload:response.error});
+        return
       }
-      const response = await trackerapi.post("/signup", { email, password });
       await AsyncStorage.setItem("token", response.data.token);
       const time = Math.max(
         response.data.time - parseInt(Date.now() / 1000),
@@ -89,6 +86,10 @@ const signin = (dispatch) => {
   return async ({ email, password }) => {
     try {
       const response = await trackerapi.post("/signin", { email, password });
+      if(response.error){
+        dispatch({type:"add_error",payload:response.error});
+        return
+      }
       await AsyncStorage.setItem("token", response.data.token);
       if (response.data.isEmailVerified) {
         dispatch({

@@ -11,13 +11,23 @@ dotenv.config();
 
 router.post("/signup", async (req, res) => {
   // req:request res:response
-  console.log("HI request",req.body);
   try {
-    const otp = await sendemail(req.body.email);
+    let {password,email,confirmPassword}=req.body;
+    email=email.toLowerCase();
+    if (!email){
+      return res.send({ error: "Must provide an Email." });
+    }
+    if(!password){
+      return res.send({ error: "Must provide an Password." });
+    }
+    if (password != confirmPassword) {
+      return res.send({ error: "Password and Confirm-Password doesnot match." });
+    }
+    const otp = await sendemail(email);
     const time = parseInt(Date.now() / 1000) + 60;
     const user = new User({
-      email: req.body.email.toLowerCase(),
-      password: req.body.password,
+      email: email,
+      password:password,
       isEmailVerified: false,
       otp: otp,
       time: time,
@@ -45,15 +55,21 @@ router.post("/signup", async (req, res) => {
 router.post("/signin", async (req, res) => {
   let { email, password } = req.body;
   email=email.toLowerCase();
-  if (!email || !password) {
-    return res.status(422).send({ error: "Must provide an email or password" });
+  if (!email ) {
+    return res.send({ error: "Must provide an Email." });
+  }
+  if(!password){
+    return res.send({ error: "Must provide an Password." });
   }
   const user = await User.findOne({ email });
   if (!user) {
-    return res.status(422).send({ error: "Invalid email or password" });
+    return res.send({ error: "Email not registered." });
   }
   try {
-    await user.comparePassword(password);
+    const match=await user.comparePassword(password);
+    if(!match){
+      res.send({error:"Incorrect Password"});
+    }
     const token = jwt.sign({ userId: user._id }, process.env.SALT);
     res.send({
       token,
