@@ -1,7 +1,8 @@
 {
   "expo": {
-    "name": "tracker-app",
+    "name": "Tracker App",
     "slug": "tracker-app",
+    "description":"This is an awesome Tracking App",
     "version": "1.0.0",
     "orientation": "portrait",
     "splash": {

@@ -98,8 +98,8 @@ const signin = (dispatch) => {
             token: response.data.token,
             isEmailVerified: true,
             time: 0,
-            email: response.email,
-            username: response.username,
+            email: response.data.email,
+            username: response.data.username,
           },
         });
         navigate("mainFlow");
@@ -114,8 +114,8 @@ const signin = (dispatch) => {
             token: response.data.token,
             isEmailVerified: false,
             time: time,
-            email: response.email,
-            username: response.username,
+            email: response.data.email,
+            username: response.data.username,
           },
         });
         navigate("Email");
