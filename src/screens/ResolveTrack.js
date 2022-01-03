@@ -11,6 +11,7 @@ const ResolveTrackScreen = () => {
     <ActivityIndicator
       size="large"
       style={{ flexDirection: "row", justifyContent: "space-around", flex: 1 }}
+      color="#067bef"
     />
   );
 };

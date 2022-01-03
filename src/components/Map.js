@@ -33,7 +33,11 @@ const Map = () => {
         strokeColor="rgba(158,158,255,1.0)"
         fillColor="rgba(158,158,255,0.5)"
       />
-      <Polyline coordinates={locations.map((loc) => loc.coords)}></Polyline>
+      <Polyline
+        coordinates={locations.map((loc) => loc.coords)}
+        strokeColor="#067bef"
+        lineJoin="round"
+      ></Polyline>
     </MapView>
   );
 };
