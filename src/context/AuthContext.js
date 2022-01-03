@@ -86,8 +86,8 @@ const signin = (dispatch) => {
   return async ({ email, password }) => {
     try {
       const response = await trackerapi.post("/signin", { email, password });
-      if(response.error){
-        dispatch({type:"add_error",payload:response.error});
+      if(response.data.error){
+        dispatch({type:"add_error",payload:response.data.error});
         return
       }
       await AsyncStorage.setItem("token", response.data.token);
