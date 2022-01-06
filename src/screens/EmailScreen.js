@@ -21,8 +21,7 @@ const EmailScreen = ({ navigation }) => {
   const [otp, setOtp] = useState("");
   const { otpverify, resendEmail, deleteUser, state, error } =
     useContext(AuthContext);
-  //const [seconds, setSeconds] = useState(state.time);
-  const [seconds, setSeconds] = useState(0);
+  const [seconds, setSeconds] = useState(state.time);
   const opacity=useState(new Animated.Value(0))[0];
   const toShow = navigation.getParam("toShow");
   useEffect(() => {
@@ -90,7 +89,7 @@ const EmailScreen = ({ navigation }) => {
               otpverify(
                 otp,
                 state.email,
-                toShow ? "ChangePassword" : "mainFlow"
+                toShow==1? "ChangePassword" : "mainFlow"
               );
             }}
           />
@@ -112,10 +111,12 @@ const EmailScreen = ({ navigation }) => {
           )}
           <TouchableOpacity
             onPress={() => {
-              if (toShow) {
+              if (toShow==1) {
                 navigate("RegisterEmail");
-              } else {
+              } else if (toShow==2) {
                 deleteUser();
+              }else{
+                navigate("Signin");
               }
               error("");
             }}

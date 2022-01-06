@@ -32,10 +32,10 @@ const AuthReducer = (state, action) => {
         ...state,
         isEmailVerified: action.payload,
         time: 0,
-        errorMessage: "",
+        errorMessage:"",
       };
     case "add_time":
-      return { ...state, time: action.payload, errorMessage: "" };
+      return { ...state, time: action.payload,errorMessage: "" };
     case "add_email":
       return { ...state, email: action.payload };
     case "delete":
@@ -69,7 +69,7 @@ const signup = (dispatch) => {
           email: response.data.email,
         },
       });
-      navigate("Email");
+      navigate("Email",{ toShow:2 });
     } catch (err) {
       console.log("Error with signup", err.message);
       dispatch({
@@ -235,7 +235,7 @@ const checkUser = (dispatch) => {
       );
       dispatch({ type: "add_email", payload: email });
       dispatch({ type: "add_time", payload: time });
-      navigate("Email", { toShow: true });
+      navigate("Email", { toShow: 1 });
     } catch (err) {
       console.log("Error from checking user", err);
     }
@@ -310,7 +310,7 @@ const deleteUser = (dispatch) => {
           isEmailVerified: false,
         },
       });
-      navigate("loginFlow");
+      navigate("Signup");
     } catch (err) {
       dispatch({
         type: "add_error",
@@ -324,7 +324,9 @@ const deleteUser = (dispatch) => {
 const changeUsername = (dispatch) => {
   return async (username, email, callback) => {
     try {
+      console.log("hi");
       await trackerapi.post("/changeusername", { username, email });
+      console.log("bye");
       dispatch({ type: "add_username", payload: username });
       navigate("AccountS");
     } catch (err) {

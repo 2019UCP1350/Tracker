@@ -18,8 +18,8 @@ const AccountScreen = () => {
     <SafeAreaView forceInset={{ top: "always" }} style={{ marginBottom: 20 }}>
       <Text style={styles.text_container}> AccountScreen</Text>
       <Spacer />
-      <ShowButton title="Username:" value={state.username} />
-      <ShowButton title="Email:" value={state.email} bottomDivider={true} />
+      <ShowButton title="Username:" value={state.username} width={33}/>
+      <ShowButton title="Email:" value={state.email} bottomDivider={true} width={20} />
       <UpdateButton
         title="Change Username"
         callback={() => {
