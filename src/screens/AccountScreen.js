@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet, Text,Platform,StatusBar } from "react-native";
 import { SafeAreaView } from "react-navigation";
 import Spacer from "../components/spacer";
 import { Context as AuthContext } from "../context/AuthContext";
@@ -15,7 +15,7 @@ import { navigate } from "../navigationRef";
 const AccountScreen = () => {
   const { signout, state } = useContext(AuthContext);
   return (
-    <SafeAreaView forceInset={{ top: "always" }} style={{ marginBottom: 20 }}>
+    <SafeAreaView forceInset={{ top: "always" }} style={{ marginBottom: 20,paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0 }}>
       <Text style={styles.text_container}> AccountScreen</Text>
       <Spacer />
       <ShowButton title="Username:" value={state.username} width={33}/>

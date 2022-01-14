@@ -56,15 +56,11 @@ const signup = (dispatch) => {
         return
       }
       await AsyncStorage.setItem("token", response.data.token);
-      const time = Math.max(
-        response.data.time - parseInt(Date.now() / 1000),
-        0
-      );
       dispatch({
         type: "signup",
         payload: {
           token: response.data.token,
-          time: time,
+          time:response.data.time,
           username: response.data.username,
           email: response.data.email,
         },
@@ -104,16 +100,12 @@ const signin = (dispatch) => {
         });
         navigate("mainFlow");
       } else {
-        const time = Math.max(
-          response.data.time - parseInt(Date.now() / 1000),
-          0
-        );
         dispatch({
           type: "signin",
           payload: {
             token: response.data.token,
             isEmailVerified: false,
-            time: time,
+            time: response.data.time,
             email: response.data.email,
             username: response.data.username,
           },
@@ -174,21 +166,16 @@ const tryLocalLogin = (dispatch) => {
         if (isEmailVerified) {
           dispatch({
             type: "signin",
-            payload: { ...response.data, token },
-            time: 0,
+            payload: { ...response.data, token,time:0},
           });
           navigate("mainFlow");
         } else {
-          const time = Math.max(
-            response.data.time - parseInt(Date.now() / 1000),
-            0
-          );
           dispatch({
             type: "signin",
             payload: {
               ...response.data,
               token,
-              time,
+              time:response.data.time,
             },
           });
           navigate("Email");
@@ -229,12 +216,8 @@ const checkUser = (dispatch) => {
         callback();
         return;
       }
-      const time = Math.max(
-        response.data.time - parseInt(Date.now() / 1000),
-        0
-      );
       dispatch({ type: "add_email", payload: email });
-      dispatch({ type: "add_time", payload: time });
+      dispatch({ type: "add_time", payload:response.data.time });
       navigate("Email", { toShow: 1 });
     } catch (err) {
       console.log("Error from checking user", err);
@@ -251,7 +234,7 @@ const resendEmail = (dispatch) => {
         0
       );
       callback(time);
-      dispatch({ type: "add_time", payload: time });
+      dispatch({ type: "add_time", payload:response.data.time });
     } catch (err) {
       console.log("error from sending email", err);
       dispatch({

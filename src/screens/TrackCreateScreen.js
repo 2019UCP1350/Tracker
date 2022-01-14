@@ -5,6 +5,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  StatusBar
 } from "react-native";
 import { Text } from "react-native-elements";
 import { SafeAreaView, withNavigationFocus } from "react-navigation";
@@ -34,7 +35,7 @@ const TrackCreateScreen = withNavigationFocus(({ isFocused }) => {
       <ScrollView>
         <SafeAreaView
           forceInset={{ top: "always" }}
-          style={{ marginBottom: 20 }}
+          style={{ marginBottom: 20,paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0 }}
         >
           <Text h2 style={{ textAlign: "center" }}>
             Create Track

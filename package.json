@@ -13,6 +13,7 @@
     "@react-native-community/masked-view": "0.1.10",
     "axios": "^0.21.4",
     "expo": "~41.0.1",
+    "expo-background-fetch": "~9.1.0",
     "expo-location": "~12.0.4",
     "expo-sharing": "~9.1.2",
     "expo-status-bar": "~1.0.4",

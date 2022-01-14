@@ -5,6 +5,8 @@ import {
   SafeAreaView,
   Alert,
   ActivityIndicator,
+  StatusBar,
+  Platform
 } from "react-native";
 import { ListItem, Button } from "react-native-elements";
 import { Context as TrackContext } from "../context/TrackContext";
@@ -30,7 +32,7 @@ const TrackListScreen = () => {
     );
   };
   return (
-    <SafeAreaView forceInset={{ top: "always" }} style={{ flex: 1 }}>
+    <SafeAreaView forceInset={{ top: "always" }} style={{ flex: 1,paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0 }}>
       {loading ? (
         <ActivityIndicator
           size="large"

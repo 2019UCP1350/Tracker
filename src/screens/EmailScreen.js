@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect,useRef } from "react";
 import {
   View,
   StyleSheet,
@@ -9,22 +9,32 @@ import {
   Platform,
   TouchableOpacity,
   Animated,
+  Dimensions,
+  AppState,
+  StatusBar
 } from "react-native";
+import { SafeAreaView } from "react-navigation";
 import { Button, Input } from "react-native-elements";
-import { Dimensions } from 'react-native';
 import Spacer from "../components/spacer";
 import { Context as AuthContext } from "../context/AuthContext";
 import { navigate } from "../navigationRef";
 
-
 const EmailScreen = ({ navigation }) => {
+  const appState = useRef(AppState.currentState);
   const [otp, setOtp] = useState("");
   const { otpverify, resendEmail, deleteUser, state, error } =
     useContext(AuthContext);
-  const [seconds, setSeconds] = useState(state.time);
-  const opacity=useState(new Animated.Value(0))[0];
+  const [seconds, setSeconds] = useState(0);
+  const opacity = useState(new Animated.Value(0))[0];
   const toShow = navigation.getParam("toShow");
+
   useEffect(() => {
+    const time = Math.max(
+      state.time - parseInt(Date.now() / 1000),
+      0
+    );
+    setSeconds(time);
+    const event=AppState.addEventListener("change", handleAppStateChange);
     let myInterval = setInterval(() => {
       if (seconds > 0) {
         setSeconds(seconds - 1);
@@ -33,26 +43,38 @@ const EmailScreen = ({ navigation }) => {
       }
     }, 1000);
     return () => {
+      AppState.removeEventListener("change", handleAppStateChange);
       clearInterval(myInterval);
     };
   });
-  
-  const fadeOut=()=>{
-    Animated.timing(opacity,{
-      toValue:0,
-      duration:3000,
-      useNativeDriver:true,
-    }).start()
+
+  const handleAppStateChange = async (nextAppState) => {
+    if (appState.current.match(/inactive|background/) && nextAppState === "active") {
+      const time = Math.max(
+        state.time - parseInt(Date.now() / 1000),
+        0
+      );
+      setSeconds(time);
+    }
+    appState.current = nextAppState;
   };
 
-  const fadeIn=()=>{
-    Animated.timing(opacity,{
-      toValue:1,
-      duration:500,
-      useNativeDriver:true,
-    }).start(()=>{
+  const fadeOut = () => {
+    Animated.timing(opacity, {
+      toValue: 0,
+      duration: 3000,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const fadeIn = () => {
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start(() => {
       fadeOut();
-    })
+    });
   };
 
   return (
@@ -61,6 +83,10 @@ const EmailScreen = ({ navigation }) => {
       style={{ flex: 1 }}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <SafeAreaView
+          forceInset={{ top: "always" }}
+          style={{ marginBottom: 20,paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0 }}
+        >
         <View style={styles.container}>
           <Text style={styles.textcontainer}>
             {`Enter the Verification code send to ${state.email}.`}
@@ -89,7 +115,7 @@ const EmailScreen = ({ navigation }) => {
               otpverify(
                 otp,
                 state.email,
-                toShow==1? "ChangePassword" : "mainFlow"
+                toShow == 1 ? "ChangePassword" : "mainFlow"
               );
             }}
           />
@@ -103,7 +129,6 @@ const EmailScreen = ({ navigation }) => {
               onPress={async () => {
                 fadeIn();
                 await resendEmail(setSeconds);
-                 
               }}
             >
               <Text style={styles.textcontainer}>Resend Email</Text>
@@ -111,11 +136,11 @@ const EmailScreen = ({ navigation }) => {
           )}
           <TouchableOpacity
             onPress={() => {
-              if (toShow==1) {
+              if (toShow == 1) {
                 navigate("RegisterEmail");
-              } else if (toShow==2) {
+              } else if (toShow == 2) {
                 deleteUser();
-              }else{
+              } else {
                 navigate("Signin");
               }
               error("");
@@ -128,19 +153,20 @@ const EmailScreen = ({ navigation }) => {
             style={{
               backgroundColor: "#067bef",
               opacity,
-              position:"absolute",
-              bottom:5,
-              padding:10,
-              width:Dimensions.get('window').width-10,
-              left:5,
-              borderRadius:10
+              position: "absolute",
+              bottom: 5,
+              padding: 10,
+              width: Dimensions.get("window").width - 10,
+              left: 5,
+              borderRadius: 10,
             }}
           >
-              <Text style={{ color: "white", fontSize: 20,textAlign:"center" }}>
-                Email has been sent.
-              </Text>
+            <Text style={{ color: "white", fontSize: 20, textAlign: "center" }}>
+              Email has been sent.
+            </Text>
           </Animated.View>
         </View>
+        </SafeAreaView>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );

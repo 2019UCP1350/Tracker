@@ -4,6 +4,8 @@ import {
   ScrollView,
   View,
   StyleSheet,
+  Platform,
+  StatusBar
 } from "react-native";
 import { SafeAreaView } from "react-navigation";
 import { Text, Input, Button } from "react-native-elements";
@@ -22,7 +24,7 @@ const ChangeUsernameScreen = () => {
       <ScrollView
         contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
       >
-        <SafeAreaView forceInset={{ top: "always" }}>
+        <SafeAreaView forceInset={{ top: "always" }} style={{paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0}}>
           <View style={styles.container}>
             <Spacer>
               <Text style={styles.textContainer}>

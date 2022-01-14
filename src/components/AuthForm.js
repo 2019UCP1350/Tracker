@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StatusBar
 } from "react-native";
 import { SafeAreaView } from "react-navigation";
 import { Input, Text, Button } from "react-native-elements";
@@ -36,7 +37,7 @@ const AuthForm = ({
       >
         <SafeAreaView
           forceInset={{ top: "always" }}
-          style={{ marginBottom: 20 }}
+          style={{ marginBottom: 20 ,paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0}}
         >
           <View style={styles.container}>
             <Spacer>

@@ -1,5 +1,5 @@
 import React, { useContext, useRef } from "react";
-import { Share, StyleSheet, Text, Alert } from "react-native";
+import { StyleSheet, Text, Alert,Platform,StatusBar } from "react-native";
 import { SafeAreaView } from "react-navigation";
 import { Context as TrackContext } from "../context/TrackContext";
 import { Button } from "react-native-elements";
@@ -40,7 +40,7 @@ const TrackDetailScreen = ({ navigation }) => {
     }
   };
   return (
-    <SafeAreaView forceInset={{ Top: "always" }}>
+    <SafeAreaView forceInset={{ Top: "always" }} style={{paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0}}>
       <MapView
         initialRegion={{
           longitudeDelta: 0.001,
