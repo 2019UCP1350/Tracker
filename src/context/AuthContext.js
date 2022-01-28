@@ -32,10 +32,10 @@ const AuthReducer = (state, action) => {
         ...state,
         isEmailVerified: action.payload,
         time: 0,
-        errorMessage:"",
+        errorMessage: "",
       };
     case "add_time":
-      return { ...state, time: action.payload,errorMessage: "" };
+      return { ...state, time: action.payload, errorMessage: "" };
     case "add_email":
       return { ...state, email: action.payload };
     case "delete":
@@ -50,22 +50,26 @@ const AuthReducer = (state, action) => {
 const signup = (dispatch) => {
   return async ({ email, password, confirmPassword }) => {
     try {
-      const response = await trackerapi.post("/signup", { email, password,confirmPassword });
-      if(response.error){
-        dispatch({type:"add_error",payload:response.error});
-        return
+      const response = await trackerapi.post("/signup", {
+        email,
+        password,
+        confirmPassword,
+      });
+      if (response.error) {
+        dispatch({ type: "add_error", payload: response.error });
+        return;
       }
       await AsyncStorage.setItem("token", response.data.token);
       dispatch({
         type: "signup",
         payload: {
           token: response.data.token,
-          time:response.data.time,
+          time: response.data.time,
           username: response.data.username,
           email: response.data.email,
         },
       });
-      navigate("Email",{ toShow:2 });
+      navigate("Email", { toShow: 2 });
     } catch (err) {
       console.log("Error with signup", err.message);
       dispatch({
@@ -82,9 +86,9 @@ const signin = (dispatch) => {
   return async ({ email, password }) => {
     try {
       const response = await trackerapi.post("/signin", { email, password });
-      if(response.data.error){
-        dispatch({type:"add_error",payload:response.data.error});
-        return
+      if (response.data.error) {
+        dispatch({ type: "add_error", payload: response.data.error });
+        return;
       }
       await AsyncStorage.setItem("token", response.data.token);
       if (response.data.isEmailVerified) {
@@ -166,7 +170,7 @@ const tryLocalLogin = (dispatch) => {
         if (isEmailVerified) {
           dispatch({
             type: "signin",
-            payload: { ...response.data, token,time:0},
+            payload: { ...response.data, token, time: 0 },
           });
           navigate("mainFlow");
         } else {
@@ -175,7 +179,7 @@ const tryLocalLogin = (dispatch) => {
             payload: {
               ...response.data,
               token,
-              time:response.data.time,
+              time: response.data.time,
             },
           });
           navigate("Email");
@@ -217,7 +221,7 @@ const checkUser = (dispatch) => {
         return;
       }
       dispatch({ type: "add_email", payload: email });
-      dispatch({ type: "add_time", payload:response.data.time });
+      dispatch({ type: "add_time", payload: response.data.time });
       navigate("Email", { toShow: 1 });
     } catch (err) {
       console.log("Error from checking user", err);
@@ -234,7 +238,7 @@ const resendEmail = (dispatch) => {
         0
       );
       callback(time);
-      dispatch({ type: "add_time", payload:response.data.time });
+      dispatch({ type: "add_time", payload: response.data.time });
     } catch (err) {
       console.log("error from sending email", err);
       dispatch({
@@ -307,7 +311,10 @@ const deleteUser = (dispatch) => {
 const changeUsername = (dispatch) => {
   return async (username, email, callback) => {
     try {
-      console.log("hi");
+      if ((useranme = "")) {
+        dispatch({ type: "add_error", payload: "Username cannot be empty" });
+        return;
+      }
       await trackerapi.post("/changeusername", { username, email });
       console.log("bye");
       dispatch({ type: "add_username", payload: username });

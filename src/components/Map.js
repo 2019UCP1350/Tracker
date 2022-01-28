@@ -18,10 +18,11 @@ const Map = () => {
 			}}
 		this code can be used to to center the position of the map to use currentLocation
 	*/
+  console.log(locations);
   return (
     <MapView
       style={{ height: 300 }}
-      initialRegion={{
+      region={{
         ...currentLocation.coords,
         latitudeDelta: 0.001,
         longitudeDelta: 0.001,
